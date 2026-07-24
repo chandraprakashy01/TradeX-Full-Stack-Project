@@ -9,4 +9,9 @@ public class homeController {
     public  String home(){
         return"Welcome to trading Platform";
     }
+    @GetMapping("/SecureRound")
+    public  String SecureRound(){
+        return"Welcome to trading Platform and See the secrity of this platform";
+    }
+
 }
