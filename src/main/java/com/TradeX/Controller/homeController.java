@@ -14,4 +14,9 @@ public class homeController {
         return"Welcome to trading Platform and See the secrity of this platform";
     }
 
+    @GetMapping("/Home")
+    public String HomePage(){
+        return " welcome to the my First project; ";
+    }
+
 }
