@@ -13,7 +13,7 @@ TwoFactorOTP findByID(String  id);
 
 boolean verifyTwoFactorOtp(TwoFactorOTP twoFactorOtp , String otp);
 
-void deleteTwoFactorOtp(TwoFactorOTP twoFactorOtp);
+static void deleteTwoFactorOtp(TwoFactorOTP twoFactorOtp);
 
 
 

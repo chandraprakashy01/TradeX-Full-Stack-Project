@@ -1,10 +1,13 @@
 package com.TradeX.Controller;
 
 import com.TradeX.config.JwtProvider;
+import com.TradeX.modal.TwoFactorOTP;
 import com.TradeX.modal.User;
 import com.TradeX.repository.UserRepository;
 import com.TradeX.response.AuthResponse;
 import com.TradeX.service.CustomerUserDetailsService;
+import com.TradeX.service.TwoFactorOtpService;
+import com.TradeX.utils.OtpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +23,18 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
      @Autowired
-     private UserRepository UserRepository ;
+     private UserRepository userRepository ;
 
      @Autowired
      private CustomerUserDetailsService customerUserDetailsService;
 
+     @Autowired
+     private TwoFactorOtpService twoFactorOtpService;
+
      @PostMapping("/signup")
      public ResponseEntity<AuthResponse> register (@RequestBody User user) throws Exception {
 
-         User isEmailExist = UserRepository.findByEmail(user.getEmail());
+         User isEmailExist = userRepository.findByEmail(user.getEmail());
          if (isEmailExist != null) {
              throw new Exception("email is already Exist use with an other account");
          }
@@ -38,7 +44,7 @@ public class AuthController {
          newUser.setEmail(user.getEmail());
          newUser.setPassword(user.getPassword());
 
-         User savedUser =  UserRepository.save( newUser);
+         User savedUser =  userRepository.save( newUser);
 
          Authentication auth = new UsernamePasswordAuthenticationToken(
                  user.getEmail(),
@@ -67,8 +73,21 @@ public class AuthController {
         Authentication auth = authenticate(userName,password);
 
         SecurityContextHolder.getContext().setAuthentication(auth);
-
+        User authUser = userRepository.findByEmail(userName);
         String jwt = JwtProvider.generateToken(auth);
+        if (user.getTowFactorAuth().isEnabled()) {
+          AuthResponse res = new AuthResponse();
+          res.setJwt("Tow Factor Auth is enabled ");
+          res.setTwoFactorAuthEnabled(true);
+          String otp = OtpUtils.generatedOTP();
+
+          TwoFactorOTP oldTwoFactorOtp = twoFactorOtpService.findByUser(authUser.getId());
+          if (oldTwoFactorOtp != null) {
+              TwoFactorOtpService.deleteTwoFactorOtp(oldTwoFactorOtp);
+          }
+//          TwoFactorOTP newTwoFactorOtp = twoFactorOtpService.findByUser(
+//                  );
+        }
 
         AuthResponse res = new AuthResponse();
         res.setJwt(jwt);

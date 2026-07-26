@@ -23,5 +23,6 @@ public class TwoFactorOTP {
     private String jwt;
 
 
-
+    public void setUser(org.springframework.security.core.userdetails.User user) {
+    }
 }
