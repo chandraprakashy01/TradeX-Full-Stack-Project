@@ -22,7 +22,9 @@ public class TwoFactorOTP {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String jwt;
 
-
-    public void setUser(org.springframework.security.core.userdetails.User user) {
-    }
 }
+
+
+
+
+

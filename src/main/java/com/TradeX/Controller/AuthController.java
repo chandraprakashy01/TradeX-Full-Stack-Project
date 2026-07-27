@@ -65,7 +65,7 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<AuthResponse> login(@RequestBody User user) throws Exception {
 
-        String userName = user.getPassword();
+        String userName = user.getEmail();
         String password = user.getPassword();
 
 
@@ -76,17 +76,16 @@ public class AuthController {
         User authUser = userRepository.findByEmail(userName);
         String jwt = JwtProvider.generateToken(auth);
         if (user.getTowFactorAuth().isEnabled()) {
-          AuthResponse res = new AuthResponse();
-          res.setJwt("Tow Factor Auth is enabled ");
-          res.setTwoFactorAuthEnabled(true);
-          String otp = OtpUtils.generatedOTP();
+            AuthResponse res = new AuthResponse();
+            res.setJwt("Tow Factor Auth is enabled ");
+            res.setTwoFactorAuthEnabled(true);
+            String otp = OtpUtils.generatedOTP();
 
-          TwoFactorOTP oldTwoFactorOtp = twoFactorOtpService.findByUser(authUser.getId());
-          if (oldTwoFactorOtp != null) {
-              TwoFactorOtpService.deleteTwoFactorOtp(oldTwoFactorOtp);
-          }
-//          TwoFactorOTP newTwoFactorOtp = twoFactorOtpService.findByUser(
-//                  );
+            TwoFactorOTP oldTwoFactorOtp = twoFactorOtpService.findByUser(authUser.getId());
+            if (oldTwoFactorOtp != null) {
+                twoFactorOtpService.deleteTwoFactorOtp(oldTwoFactorOtp);
+            }
+            TwoFactorOTP newTwoFactorOtp = twoFactorOtpService.findByUser(authUser.getId());
         }
 
         AuthResponse res = new AuthResponse();

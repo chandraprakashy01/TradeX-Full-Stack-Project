@@ -1,11 +1,11 @@
 package com.TradeX.service;
 
 import com.TradeX.modal.TwoFactorOTP;
+import com.TradeX.modal.User;
 import com.TradeX.repository.TwoFactorOtpRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.stereotype.Service;
 
+import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,7 +47,6 @@ public class TwoFactorServiceImpl implements TwoFactorOtpService {
         return twoFactorOtp.getOtp().equals(otp);
     }
 
-    @Override
     public void deleteTwoFactorOtp(TwoFactorOTP twoFactorOtp) {
         twoFactorOtpRepository.delete(twoFactorOtp);
 

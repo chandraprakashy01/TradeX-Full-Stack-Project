@@ -1,7 +1,8 @@
 package com.TradeX.service;
 
 import com.TradeX.modal.TwoFactorOTP;
-import org.springframework.security.core.userdetails.User;
+import com.TradeX.modal.User;
+import com.TradeX.repository.TwoFactorOtpRepository;
 
 public interface TwoFactorOtpService {
 
@@ -13,7 +14,8 @@ TwoFactorOTP findByID(String  id);
 
 boolean verifyTwoFactorOtp(TwoFactorOTP twoFactorOtp , String otp);
 
-static void deleteTwoFactorOtp(TwoFactorOTP twoFactorOtp);
+void deleteTwoFactorOtp(TwoFactorOTP twoFactorOtp) ;
+
 
 
 
