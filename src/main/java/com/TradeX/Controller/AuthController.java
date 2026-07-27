@@ -6,6 +6,7 @@ import com.TradeX.modal.User;
 import com.TradeX.repository.UserRepository;
 import com.TradeX.response.AuthResponse;
 import com.TradeX.service.CustomerUserDetailsService;
+import com.TradeX.service.EmailService;
 import com.TradeX.service.TwoFactorOtpService;
 import com.TradeX.utils.OtpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class AuthController {
 
      @Autowired
      private TwoFactorOtpService twoFactorOtpService;
+
+     @Autowired
+     private EmailService emailService;
 
      @PostMapping("/signup")
      public ResponseEntity<AuthResponse> register (@RequestBody User user) throws Exception {
@@ -73,19 +77,35 @@ public class AuthController {
         Authentication auth = authenticate(userName,password);
 
         SecurityContextHolder.getContext().setAuthentication(auth);
+
         User authUser = userRepository.findByEmail(userName);
+
         String jwt = JwtProvider.generateToken(auth);
+
         if (user.getTowFactorAuth().isEnabled()) {
+
             AuthResponse res = new AuthResponse();
+
             res.setJwt("Tow Factor Auth is enabled ");
+
             res.setTwoFactorAuthEnabled(true);
+
             String otp = OtpUtils.generatedOTP();
+
 
             TwoFactorOTP oldTwoFactorOtp = twoFactorOtpService.findByUser(authUser.getId());
             if (oldTwoFactorOtp != null) {
                 twoFactorOtpService.deleteTwoFactorOtp(oldTwoFactorOtp);
             }
-            TwoFactorOTP newTwoFactorOtp = twoFactorOtpService.findByUser(authUser.getId());
+            TwoFactorOTP newTwoFactorOtp = twoFactorOtpService.createTwoFactorOtp(
+                    authUser,otp,jwt);
+
+           emailService.sendVerificationEmail(userName,otp);
+
+
+
+            res.setSession(newTwoFactorOtp.getId());
+            return  new ResponseEntity<>(res, HttpStatus.CREATED);
         }
 
         AuthResponse res = new AuthResponse();
@@ -106,5 +126,9 @@ public class AuthController {
 
         }
         return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+    }
+    public  ResponseEntity<AuthResponse> verifySiginOtp (String email) {
+        AuthResponse res = new AuthResponse();
+        //02:34
     }
 }
