@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -127,8 +128,21 @@ public class AuthController {
         }
         return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
     }
-    public  ResponseEntity<AuthResponse> verifySiginOtp (String email) {
-        AuthResponse res = new AuthResponse();
-        //02:34
+    public  ResponseEntity<AuthResponse> verifySinginOtp(
+            @PathVariable String otp,
+            @RequestParam String id ) throws Exception {
+      TwoFactorOTP twoFactorOTP= twoFactorOtpService.findByID(id);
+
+      if(twoFactorOtpService.verifyTwoFactorOtp(twoFactorOTP, otp)){
+
+             AuthResponse res = new AuthResponse();
+             res.setMessage("Two Factor authentication verified ");
+             res.setTwoFactorAuthEnabled(true);
+             res.setJwt(twoFactorOTP.getJwt());
+             return new ResponseEntity<>(res, HttpStatus.OK);
+
+      }
+
+     throw  new Exception("invalid otp");
     }
 }
