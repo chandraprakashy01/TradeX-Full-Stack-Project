@@ -128,7 +128,8 @@ public class AuthController {
         }
         return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
     }
-    public  ResponseEntity<AuthResponse> verifySinginOtp(
+    @PostMapping("/two-factor/otp{otp}")
+    public  ResponseEntity<AuthResponse> verifySingInOtp(
             @PathVariable String otp,
             @RequestParam String id ) throws Exception {
       TwoFactorOTP twoFactorOTP= twoFactorOtpService.findByID(id);
