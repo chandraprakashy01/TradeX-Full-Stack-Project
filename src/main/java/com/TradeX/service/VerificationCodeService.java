@@ -12,7 +12,7 @@ public interface  VerificationCodeService {
 
     VerificationCode getVerificationCodeByUser(long userId);
 
-    Void deleteVerificationCodeById(VerificationCode verificationCode);
+    void deleteVerificationCodeById(VerificationCode verificationCode);
 
 
 

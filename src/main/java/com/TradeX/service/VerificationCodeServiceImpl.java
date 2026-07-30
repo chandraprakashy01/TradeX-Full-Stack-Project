@@ -6,9 +6,10 @@ import com.TradeX.modal.VerificationCode;
 import com.TradeX.repository.VerificationCodeRepository;
 import com.TradeX.utils.OtpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
+@Service
 public class VerificationCodeServiceImpl implements VerificationCodeService {
     @Autowired
     private VerificationCodeRepository verificationCodeRepository;
@@ -48,8 +49,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
     }
 
     @Override
-    public Void deleteVerificationCodeById(VerificationCode verificationCode) {
+    public void deleteVerificationCodeById(VerificationCode verificationCode) {
         verificationCodeRepository.delete(verificationCode);
-        return null;
     }
 }
