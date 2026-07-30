@@ -2,15 +2,20 @@ package com.TradeX.Controller;
 
 
 import com.TradeX.Domain.VerificationType;
+import com.TradeX.modal.ForgotPasswordToken;
 import com.TradeX.modal.User;
 import com.TradeX.modal.VerificationCode;
 import com.TradeX.service.EmailService;
+import com.TradeX.service.ForgotPasswordService;
 import com.TradeX.service.UserService;
 import com.TradeX.service.VerificationCodeService;
+import com.TradeX.utils.OtpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 public class UserController {
@@ -19,6 +24,9 @@ public class UserController {
 
     @Autowired
     private VerificationCodeService verificationCodeService;
+
+    @Autowired
+    private ForgotPasswordService forgotPasswordService;
 
     @Autowired
     private EmailService emailService;
@@ -85,4 +93,26 @@ public class UserController {
 
         throw new Exception("Wrong verification code");
     }
+    @PostMapping("/auth/reset-password/verification/send-otp")
+    public ResponseEntity<String> sendForgotPasswordOtp(
+            @RequestHeader("Authorization")String jwt,
+            @PathVariable VerificationType verificationType) throws Exception {
+
+          User user = userService.findUserProfileByJwt(jwt);
+          String otp= OtpUtils.generatedOTP();
+          UUID uuid = UUID.randomUUID();
+          String id = uuid.toString();
+
+
+          ForgotPasswordService token = (ForgotPasswordService) forgotPasswordService.findByUser(user.getId());
+
+
+
+
+
+        return new ResponseEntity<>(" Forgot Password  otp Successfully Sned", HttpStatus.OK);
+    }
+
+
+
 }
