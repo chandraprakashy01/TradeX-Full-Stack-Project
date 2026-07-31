@@ -2,9 +2,13 @@ package com.TradeX.Controller;
 
 
 import com.TradeX.Domain.VerificationType;
+import com.TradeX.Request.ForgotPasswordTokenRequest;
+import com.TradeX.Request.ResetPasswordRequest;
 import com.TradeX.modal.ForgotPasswordToken;
 import com.TradeX.modal.User;
 import com.TradeX.modal.VerificationCode;
+import com.TradeX.response.ApiResponse;
+import com.TradeX.response.AuthResponse;
 import com.TradeX.service.EmailService;
 import com.TradeX.service.ForgotPasswordService;
 import com.TradeX.service.UserService;
@@ -61,7 +65,7 @@ public class UserController {
 
         }
         if(verificationType==VerificationType.EMAIL){
-            emailService.sendVerificationEmail(user.getEmail()
+            emailService.sendVerificationOtpEmail(user.getEmail()
                     ,verificationCode.getOtp() );
 
         }
@@ -94,25 +98,59 @@ public class UserController {
         throw new Exception("Wrong verification code");
     }
     @PostMapping("/auth/reset-password/verification/send-otp")
-    public ResponseEntity<String> sendForgotPasswordOtp(
-            @RequestHeader("Authorization")String jwt,
-            @PathVariable VerificationType verificationType) throws Exception {
+    public ResponseEntity<AuthResponse> sendForgotPasswordOtp(
 
-          User user = userService.findUserProfileByJwt(jwt);
+            @RequestBody ForgotPasswordTokenRequest req) throws Exception {
+
+          User user = userService.findUserProfileByEmail(req.getSendTo());
           String otp= OtpUtils.generatedOTP();
           UUID uuid = UUID.randomUUID();
           String id = uuid.toString();
 
 
-          ForgotPasswordService token = (ForgotPasswordService) forgotPasswordService.findByUser(user.getId());
+          ForgotPasswordToken token =  forgotPasswordService.findByUser(user.getId());
+
+          if(token==null){
+              token= forgotPasswordService.createToken(user,id,otp,req.getVerificationType(),req.getSendTo());
+          }
+          if (req.getVerificationType().equals(VerificationType.EMAIL)) {
+
+              emailService.sendVerificationOtpEmail(
+                      user.getEmail()
+                      ,token.getOtp());
+          }
+        AuthResponse response = new AuthResponse();
+          response.setSession(token.getId());
+          response.setMessage("Forgot Password Reset Successfully");
 
 
 
-
-
-        return new ResponseEntity<>(" Forgot Password  otp Successfully Sned", HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @PatchMapping("/api/auth/reset-password/verify-otp/")
+    public ResponseEntity<ApiResponse> resetPassword(
+            @RequestParam String id,
+            @RequestBody ResetPasswordRequest req,
+            @RequestHeader("Authorization")String jwt
+            ) throws Exception {
 
+
+        ForgotPasswordToken forgotpasswordToken = forgotPasswordService.findById(id);
+
+        boolean isVerified = forgotpasswordToken.getOtp()
+                .equals(req.getOtp());
+        if(isVerified){
+            userService.updatePassword(forgotpasswordToken.getUser(),req.getPassword());
+
+            ApiResponse res= new ApiResponse();
+            res.setMessage("Password Update Successfully");
+
+
+            return new ResponseEntity<>(res,HttpStatus.ACCEPTED);
+
+        }
+throw new Exception("Wrong verification code");
+    }
 
 
 }

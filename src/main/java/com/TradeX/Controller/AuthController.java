@@ -101,7 +101,7 @@ public class AuthController {
             TwoFactorOTP newTwoFactorOtp = twoFactorOtpService.createTwoFactorOtp(
                     authUser,otp,jwt);
 
-           emailService.sendVerificationEmail(userName,otp);
+           emailService.sendVerificationOtpEmail(userName,otp);
 
 
 

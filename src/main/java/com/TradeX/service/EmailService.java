@@ -14,7 +14,7 @@ public class EmailService {
 
      private JavaMailSender javaMailSender;
 
-     public void sendVerificationEmail(String email,
+     public void sendVerificationOtpEmail(String email,
                                        String otp) throws MessagingException {
           MimeMessage mimeMessage = javaMailSender.createMimeMessage();
           MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, "UTF-8");
