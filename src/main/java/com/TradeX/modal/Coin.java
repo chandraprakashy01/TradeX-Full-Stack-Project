@@ -3,17 +3,11 @@ package com.TradeX.modal;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.Instant;
+import java.util.Date;
 
 
 @Entity
-@Table(name = "coins")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Data
 public class Coin {
 
 
@@ -76,7 +70,7 @@ public class Coin {
         private Double athChangePercentage;
 
         @JsonProperty("ath_date")
-        private Instant athDate;
+        private Date athDate;
 
         private Double atl;
 
@@ -84,12 +78,12 @@ public class Coin {
         private Double atlChangePercentage;
 
         @JsonProperty("atl_date")
-        private Instant atlDate;
+        private Date atlDate;
 
         @Transient
-        private Object roi;
+        private String roi;
 
         @JsonProperty("last_updated")
-        private Instant lastUpdated;
+        private Date lastUpdated;
 
 }
