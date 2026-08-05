@@ -1,7 +1,7 @@
 package com.TradeX.service;
 
 import com.TradeX.modal.Coin;
-import org.hibernate.mapping.List;
+import java.util.List;
 
 public class CoinServiceImp implements CoinService {
     @Override

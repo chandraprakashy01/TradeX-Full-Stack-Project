@@ -21,17 +21,16 @@ public class JwtProvider {
         String jwt = Jwts.builder()
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime()+86400000))
-                .claim("Email",auth.getName())
+                .claim("email",auth.getName())
                 .claim("authorities",roles)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-        return null;
+        return jwt;
     }
     public static  String getEmailFromToken(String token){
         token = token.substring(7);
         Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-        String email = String.valueOf(claims.get("email"));
-        return email;
+        return String.valueOf(claims.get("email"));
     }
 
     private static String populateAuthorities(Collection<? extends GrantedAuthority> authorities) {
@@ -40,6 +39,8 @@ public class JwtProvider {
             auth.add(ga.getAuthority());
 
         }
-        return String.join("," + auth);
+        return String.join(",", auth.stream()
+                .map(Object::toString)
+                .toArray(String[]::new));
     }
 }
